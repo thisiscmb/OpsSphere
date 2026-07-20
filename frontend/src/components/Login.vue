@@ -90,7 +90,7 @@
 
 <script>
 import axios from "axios";
-
+import api from "../services/api";
 export default {
   name: "Login",
   data() {
@@ -110,7 +110,7 @@ export default {
     async handleLogin() {
       this.clearMessages();
       try {
-        const res = await axios.post("https://api.timetracker.xcellencematters.in/api/auth/login", {
+        const res = await api.post("/auth/login", {
           username: this.username,
           password: this.password
         });
@@ -130,7 +130,7 @@ export default {
     async handleReset() {
       this.clearMessages();
       try {
-        const res = await axios.post("https://api.timetracker.xcellencematters.in/api/auth/update-password", {
+        const res = await api.post("/auth/update-password", {
           username: this.resetUsername,
           oldPassword: this.oldPassword,
           newPassword: this.newPassword

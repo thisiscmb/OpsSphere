@@ -160,6 +160,7 @@
 
 <script>
 import axios from "axios";
+import api from "../services/api";
 
 export default {
   name: "AttendanceDayView",
@@ -204,8 +205,8 @@ export default {
     },
     async fetchSummary() {
       try {
-        const res = await axios.get(
-          `https://api.timetracker.xcellencematters.in/api/attendance/date/${this.selectedDate}`
+        const res = await api.get(
+          `/attendance/date/${this.selectedDate}`
         );
 
         const raw = res.data || [];

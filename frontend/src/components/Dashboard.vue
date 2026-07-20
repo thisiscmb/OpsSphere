@@ -209,7 +209,7 @@
 import axios from "axios";
 import DayView from "./DayView.vue";
 import AttendanceDayView from "./AttendanceDayView.vue";
-
+import api from "../services/api"; // Import the api instance
 export default {
   name: "Dashboard",
   components: { DayView, AttendanceDayView },
@@ -252,8 +252,8 @@ export default {
       this.error = "";
       this.success = "";
       try {
-        const res = await axios.post(
-          "https://api.timetracker.xcellencematters.in/api/auth/update-password",
+        const res = await api.post(
+          "/auth/update-password",
           {
             username: this.resetUsername,
             oldPassword: this.oldPassword,

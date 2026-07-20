@@ -158,6 +158,8 @@ ChartJS.register(
   TimeScale,
   PointElement
 );
+import api from "../services/api";
+
 // ChartJS.register(PointElement);
 export default {
   name: "ReportView",
@@ -601,8 +603,8 @@ export default {
     async fetchSummary() {
       try {
         const { username, date } = this.$route.params;
-        const res = await axios.get(
-          `https://api.timetracker.xcellencematters.in/api/summary/user/${username}?date=${date}`
+        const res = await api.get(
+          `/summary/user/${username}?date=${date}`
         );
         this.summary =
           Array.isArray(res.data) && res.data.length ? res.data[0] : null;

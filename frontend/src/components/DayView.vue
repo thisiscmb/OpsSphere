@@ -93,6 +93,7 @@
 
 <script>
 import axios from "axios";
+import api from "../services/api";
 
 export default {
   name: "DayView",
@@ -111,8 +112,8 @@ export default {
     },
     async fetchSummary() {
       try {
-        const res = await axios.get(
-          `https://api.timetracker.xcellencematters.in/api/summary/date/${this.selectedDate}`
+        const res = await api.get(
+          `/summary/date/${this.selectedDate}`
         );
         this.summary = res.data || [];
       } catch (err) {
