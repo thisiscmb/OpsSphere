@@ -1,0 +1,42 @@
+backend:
+  replicaCount: 2
+
+  image:
+    repository: chandanbharadwaj007/opssphere-backend
+    tag: v2
+    pullPolicy: Always
+
+  service:
+    port: 3000
+
+frontend:
+  replicaCount: 2
+
+  image:
+    repository: chandanbharadwaj007/opssphere-frontend
+    tag: v2
+    pullPolicy: Always
+
+  service:
+    port: 80
+
+mongodb:
+  replicaCount: 1
+
+  image:
+    repository: mongo
+    tag: "7.0"
+
+  storage:
+    size: 2Gi
+
+  service:
+    port: 27017
+config:
+  nodeEnv: production
+  mongoUri: mongodb://mongodb:27017/TimeTracker
+
+ingress:
+  enabled: true
+  className: nginx
+  host: localhost
