@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:8
+    container_name: opssphere-mongodb
+
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongodb_data:/data/db
+
+    networks:
+      - opssphere-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile:  ../docker/backend/Dockerfile
+
+    container_name: opssphere-backend
+
+    restart: unless-stopped
+
+    depends_on:
+      - mongodb
+
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://mongodb:27017/TimeTracker
+
+    ports:
+      - "3000:3000"
+
+    networks:
+      - opssphere-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile:  ../docker/frontend/Dockerfile
+
+    container_name: opssphere-frontend
+
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "8080:80"
+
+    networks:
+      - opssphere-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  opssphere-network:
