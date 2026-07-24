@@ -16,7 +16,12 @@ spec:
           mountPath: /kaniko/.docker
         - name: workspace-volume
           mountPath: /home/jenkins/agent
-
+    - name: trivy
+      image: aquasec/trivy:latest
+      command:
+      - sleep
+      args:
+      - "99d"
     - name: git
       image: alpine/git:latest
       command:
@@ -81,6 +86,13 @@ spec:
                       --destination=$BACKEND_IMAGE:$IMAGE_TAG
                     '''
                 }
+                container('trivy') {
+                    sh '''
+                    trivy image \
+                        --severity HIGH,CRITICAL \
+                        docker.io/chandanbharadwaj007/opssphere-backend:${BUILD_NUMBER}
+                    '''
+}
             }
         }
 
@@ -94,6 +106,13 @@ spec:
                       --destination=$FRONTEND_IMAGE:$IMAGE_TAG
                     '''
                 }
+                container('trivy') {
+                    sh '''
+                    trivy image \
+                        --severity HIGH,CRITICAL \
+                        docker.io/chandanbharadwaj007/opssphere-frontend:${BUILD_NUMBER}
+                    '''
+}
             }
         }
 
@@ -112,16 +131,16 @@ spec:
         }
 
         stage('Commit & Push') {
-    steps {
-        container('git') {
-            withCredentials([
+            steps {
+                container('git') {
+                    withCredentials([
                 usernamePassword(
                     credentialsId: 'github_creds',
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_TOKEN'
                 )
             ]) {
-                sh '''
+                        sh '''
                 git config --global --add safe.directory "$WORKSPACE"
 
                 git config user.email "jenkins@opssphere.local"
@@ -139,9 +158,9 @@ spec:
                 git push https://${GIT_USER}:${GIT_TOKEN}@${REPO} HEAD:main
                 '''
             }
+                }
+            }
         }
-    }
-}
     }
 
     post {
