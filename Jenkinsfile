@@ -105,37 +105,36 @@ spec:
         }
 
         stage('Commit & Push') {
-            steps {
-                container('git') {
+    steps {
+        container('git') {
+            dir(env.WORKSPACE) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'github_creds',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_TOKEN'
+                    )
+                ]) {
+                    sh '''
+                    git config user.email "jenkins@opssphere.local"
+                    git config user.name "Jenkins"
 
-                    withCredentials([
-                        usernamePassword(
-                            credentialsId: 'github_creds',
-                            usernameVariable: 'GIT_USER',
-                            passwordVariable: 'GIT_TOKEN'
-                        )
-                    ]) {
+                    git add helm/opssphere/values.yaml
 
-                        sh '''
-                        git config user.email "jenkins@opssphere.local"
-                        git config user.name "Jenkins"
+                    git diff --cached --quiet && exit 0
 
-                        git add helm/opssphere/values.yaml
+                    git commit -m "Update image tag to ${IMAGE_TAG}"
 
-                        git diff --cached --quiet && exit 0
+                    REPO=$(git remote get-url origin)
+                    REPO=${REPO#https://}
 
-                        git commit -m "Update image tag to ${IMAGE_TAG}"
-
-                        REPO=$(git remote get-url origin)
-
-                        REPO=${REPO#https://}
-
-                        git push https://${GIT_USER}:${GIT_TOKEN}@${REPO} HEAD:main
-                        '''
-                    }
+                    git push https://${GIT_USER}:${GIT_TOKEN}@${REPO} HEAD:main
+                    '''
                 }
             }
         }
+    }
+}
     }
 
     post {
