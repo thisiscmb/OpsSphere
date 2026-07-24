@@ -13,11 +13,7 @@ spec:
     tty: true
     volumeMounts:
       - name: docker-config
-        secret:
-          secretName: dockerhub-secret
-          items:
-      - key: .dockerconfigjson
-        path: config.json
+        mountPath: /kaniko/.docker
 
   - name: git
     image: alpine/git:latest
@@ -26,9 +22,12 @@ spec:
     tty: true
 
   volumes:
-    - name: docker-config
-      secret:
-        secretName: dockerhub-secret
+   - name: docker-config
+     secret:
+       secretName: dockerhub-secret
+       items:
+       - key: .dockerconfigjson
+         path: config.json
 '''
         }
     }
