@@ -2,35 +2,38 @@ pipeline {
     agent {
         kubernetes {
             yaml '''
-apiVersion: v1
+aapiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.23.2-debug
-    command:
-      - /busybox/cat
-    tty: true
-    volumeMounts:
-      - name: docker-config
-        mountPath: /kaniko/.docker
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:v1.23.2-debug
+      command:
+        - /busybox/cat
+      tty: true
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+        - name: workspace-volume
+          mountPath: /home/jenkins/agent
 
-  - name: git
-  image: alpine/git:latest
-  command:
-    - cat
-  tty: true
-  volumeMounts:
-    - name: workspace-volume
-      mountPath: /home/jenkins/agent
+    - name: git
+      image: alpine/git:latest
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: workspace-volume
+          mountPath: /home/jenkins/agent
 
   volumes:
-   - name: docker-config
-     secret:
-       secretName: dockerhub-secret
-       items:
-       - key: .dockerconfigjson
-         path: config.json
+    - name: docker-config
+      secret:
+        secretName: dockerhub-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+
     - name: workspace-volume
       emptyDir: {}
 '''
@@ -38,8 +41,8 @@ spec:
     }
 
     environment {
-        BACKEND_IMAGE = "docker.io/chandanbharadwaj007/opssphere-backend"
-        FRONTEND_IMAGE = "docker.io/chandanbharadwaj007/opssphere-frontend"
+        BACKEND_IMAGE = 'docker.io/chandanbharadwaj007/opssphere-backend'
+        FRONTEND_IMAGE = 'docker.io/chandanbharadwaj007/opssphere-frontend'
 
         IMAGE_TAG = "v${BUILD_NUMBER}"
     }
@@ -49,16 +52,15 @@ spec:
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
         stage('Verify Docker Config') {
-    steps {
-        container('kaniko') {
-            sh '''
+            steps {
+                container('kaniko') {
+                    sh '''
             echo "=== Files ==="
             ls -la /kaniko/.docker
 
@@ -66,9 +68,9 @@ spec:
             echo "=== Config ==="
             cat /kaniko/.docker/config.json
             '''
+                }
+            }
         }
-    }
-}
         stage('Build Backend') {
             steps {
                 container('kaniko') {
@@ -110,9 +112,9 @@ spec:
         }
 
         stage('Debug Git') {
-    steps {
-        container('git') {
-            sh '''
+            steps {
+                container('git') {
+                    sh '''
             echo "PWD"
             pwd
 
@@ -130,25 +132,24 @@ spec:
 
             git -C $WORKSPACE status || true
             '''
+                }
+            }
         }
-    }
-}
     }
 
     post {
-
         success {
-            echo ""
-            echo "===================================="
-            echo " Build Successful"
+            echo ''
+            echo '===================================='
+            echo ' Build Successful'
             echo " Backend : ${BACKEND_IMAGE}:${IMAGE_TAG}"
             echo " Frontend: ${FRONTEND_IMAGE}:${IMAGE_TAG}"
-            echo " ArgoCD will deploy automatically."
-            echo "===================================="
+            echo ' ArgoCD will deploy automatically.'
+            echo '===================================='
         }
 
         failure {
-            echo "Build Failed"
+            echo 'Build Failed'
         }
     }
 }
