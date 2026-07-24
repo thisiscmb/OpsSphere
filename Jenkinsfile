@@ -111,30 +111,37 @@ spec:
             }
         }
 
-        stage('Debug Git') {
-            steps {
-                container('git') {
-                    sh '''
-            echo "PWD"
-            pwd
+        stage('Commit & Push') {
+    steps {
+        container('git') {
+            withCredentials([
+                usernamePassword(
+                    credentialsId: 'github_creds',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )
+            ]) {
+                sh '''
+                git config --global --add safe.directory "$WORKSPACE"
 
-            echo
-            echo "WORKSPACE=$WORKSPACE"
+                git config user.email "jenkins@opssphere.local"
+                git config user.name "Jenkins"
 
-            echo
-            ls -la
+                git add helm/opssphere/values.yaml
 
-            echo
-            ls -la $WORKSPACE
+                git diff --cached --quiet && exit 0
 
-            echo
-            ls -la $WORKSPACE/.git || true
+                git commit -m "Update image tag to ${IMAGE_TAG}"
 
-            git -C $WORKSPACE status || true
-            '''
-                }
+                REPO=$(git remote get-url origin)
+                REPO=${REPO#https://}
+
+                git push https://${GIT_USER}:${GIT_TOKEN}@${REPO} HEAD:main
+                '''
             }
         }
+    }
+}
     }
 
     post {
