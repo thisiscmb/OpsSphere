@@ -3,7 +3,7 @@ backend:
 
   image:
     repository: chandanbharadwaj007/opssphere-backend
-    tag: v2
+    tag: v13
     pullPolicy: Always
 
   service:
@@ -14,7 +14,7 @@ frontend:
 
   image:
     repository: chandanbharadwaj007/opssphere-frontend
-    tag: v2
+    tag: v13
     pullPolicy: Always
 
   service:
