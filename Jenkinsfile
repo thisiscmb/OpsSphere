@@ -90,7 +90,7 @@ spec:
                     sh '''
                     trivy image \
                         --severity HIGH,CRITICAL \
-                        docker.io/chandanbharadwaj007/opssphere-backend:${BUILD_NUMBER}
+                        docker.io/chandanbharadwaj007/opssphere-backend:v${BUILD_NUMBER}
                     '''
 }
             }
@@ -110,7 +110,7 @@ spec:
                     sh '''
                     trivy image \
                         --severity HIGH,CRITICAL \
-                        docker.io/chandanbharadwaj007/opssphere-frontend:${BUILD_NUMBER}
+                        docker.io/chandanbharadwaj007/opssphere-frontend:v${BUILD_NUMBER}
                     '''
 }
             }
