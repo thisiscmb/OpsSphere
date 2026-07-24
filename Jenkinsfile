@@ -110,7 +110,7 @@ spec:
 
                     withCredentials([
                         usernamePassword(
-                            credentialsId: 'github-creds',
+                            credentialsId: 'github_creds',
                             usernameVariable: 'GIT_USER',
                             passwordVariable: 'GIT_TOKEN'
                         )
