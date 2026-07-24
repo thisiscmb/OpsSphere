@@ -16,10 +16,13 @@ spec:
         mountPath: /kaniko/.docker
 
   - name: git
-    image: alpine/git:latest
-    command:
-      - cat
-    tty: true
+  image: alpine/git:latest
+  command:
+    - cat
+  tty: true
+  volumeMounts:
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
 
   volumes:
    - name: docker-config
@@ -28,6 +31,8 @@ spec:
        items:
        - key: .dockerconfigjson
          path: config.json
+    - name: workspace-volume
+      emptyDir: {}
 '''
         }
     }
