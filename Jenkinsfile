@@ -13,7 +13,11 @@ spec:
     tty: true
     volumeMounts:
       - name: docker-config
-        mountPath: /kaniko/.docker
+        secret:
+          secretName: dockerhub-secret
+          items:
+      - key: .dockerconfigjson
+        path: config.json
 
   - name: git
     image: alpine/git:latest
