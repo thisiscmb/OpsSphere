@@ -50,7 +50,20 @@ spec:
                 checkout scm
             }
         }
+        stage('Verify Docker Config') {
+    steps {
+        container('kaniko') {
+            sh '''
+            echo "=== Files ==="
+            ls -la /kaniko/.docker
 
+            echo ""
+            echo "=== Config ==="
+            cat /kaniko/.docker/config.json
+            '''
+        }
+    }
+}
         stage('Build Backend') {
             steps {
                 container('kaniko') {
